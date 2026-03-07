@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Cậu... ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* CSS Variables & Reset */
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ff8fa3;
+            --bg-start: #fff0f3;
+            --bg-end: #ffccd5;
+            --text-main: #590d22;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Hearts Background */
+        .hearts-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .heart-particle {
+            position: absolute;
+            bottom: -10vh;
+            transform: translateY(0) scale(1);
+            opacity: 0;
+            animation: floatUp 10s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+                transform: translateY(-20vh) scale(1) rotate(15deg);
+            }
+            80% {
+                opacity: 0.8;
+                transform: translateY(-80vh) scale(1.2) rotate(-15deg);
+            }
+            100% {
+                transform: translateY(-120vh) scale(1) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(255, 77, 109, 0.2);
+            border-radius: 30px;
+            padding: 50px 30px;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+        }
+        .glass-panel.active {
+            transform: scale(1);
+            opacity: 1;
+            display: block;
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.3), 0 0 20px rgba(255, 77, 109, 0.2);
+        }
+        h1 { font-size: 4rem; margin-bottom: 20px; line-height: 1.2; }
+        h2 { font-size: 3rem; line-height: 1.4; }
+        p { font-size: 1.5rem; font-weight: 600; margin-bottom: 30px; color: var(--text-main); }
+
+        /* Buttons */
+        .btn {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            outline: none;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 77, 109, 0.4);
+            z-index: 20;
+            position: relative;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.6);
+        }
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--secondary);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Start Button */
+        #start-btn {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.7);
+            animation: pulse 2s infinite;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+            font-family: 'Quicksand', sans-serif;
+        }
+        #start-btn svg {
+            width: 60px;
+            height: 60px;
+            fill: white;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 30px rgba(255, 77, 109, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0); }
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.3); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.3); }
+            70% { transform: scale(1); }
+        }
+
+        /* Message Sequence */
+        #message-container {
+            display: none;
+            min-height: 200px;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .message {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: blur(5px);
+        }
+        .message.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        /* Question Section */
+        #question-container {
+            display: none;
+        }
+        .buttons-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 50px;
+            min-height: 100px;
+            position: relative;
+        }
+
+        /* Success Section */
+        #success-container {
+            display: none;
+        }
+        .success-icon {
+            width: 150px;
+            height: 150px;
+            fill: var(--primary);
+            margin: 0 auto 30px;
+            animation: heartbeat 2s infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 77, 109, 0.5));
+        }
+
+        /* Sparkles */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white, 0 0 20px white;
+            animation: twinkle 1.5s infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 { font-size: 3rem; }
+            h2 { font-size: 2.2rem; }
+            .glass-panel { padding: 30px 20px; }
+            .buttons-wrapper { flex-direction: column; gap: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Hearts Background -->
+    <div class="hearts-bg" id="hearts-bg"></div>
+
+    <div class="container">
+        <!-- Step 0: Start Button -->
+        <div id="start-container" class="active">
+            <button id="start-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                Nhấn vào đây
+            </button>
+        </div>
+
+        <!-- Step 1: Messages -->
+        <div id="message-container">
+            <h2 class="message">Chào cậu... 👋</h2>
+            <h2 class="message">Tớ có một bí mật muốn nói với cậu từ lâu lắm rồi...</h2>
+            <h2 class="message">Cậu có biết là...</h2>
+            <h2 class="message">Nụ cười của cậu làm tớ xao xuyến không? ✨</h2>
+            <h2 class="message">Mỗi lần nhìn thấy cậu, tim tớ lại đập thình thịch 💓</h2>
+            <h2 class="message">Và tớ muốn hỏi cậu một điều...</h2>
+        </div>
+
+        <!-- Step 2: Question -->
+        <div id="question-container" class="glass-panel">
+            <h1>Làm người yêu tớ nhé? 🥺</h1>
+            <div class="buttons-wrapper">
+                <button id="yes-btn" class="btn btn-primary">Đồng ý luôn! ❤️</button>
+                <button id="no-btn" class="btn btn-secondary">Không nha 😝</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Success -->
+        <div id="success-container" class="glass-panel">
+            <svg class="success-icon" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <h1>Tớ biết ngay mà! 🥰</h1>
+            <p>Cảm ơn cậu vì đã đồng ý. Từ nay chúng mình là của nhau rồi nhé! 💖</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate Floating Hearts
+        const heartsBg = document.getElementById('hearts-bg');
+        for (let i = 0; i < 30; i++) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDelay = Math.random() * 10 + 's';
+            heart.style.animationDuration = Math.random() * 10 + 10 + 's';
+            
+            const colors = ['#ff4d6d', '#ff8fa3', '#ffb3c1', '#c9184a'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            const size = Math.random() * 20 + 15;
+            heart.innerHTML = `<svg viewBox="0 0 24 24" style="width: ${size}px; height: ${size}px; fill: ${color}; opacity: 0.6;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+            
+            heartsBg.appendChild(heart);
+        }
+
+        // Add sparkles to background
+        for (let i = 0; i < 30; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            heartsBg.appendChild(sparkle);
+        }
+
+        // Logic
+        const startBtn = document.getElementById('start-btn');
+        const startContainer = document.getElementById('start-container');
+        const messageContainer = document.getElementById('message-container');
+        const messages = document.querySelectorAll('.message');
+        const questionContainer = document.getElementById('question-container');
+        const successContainer = document.getElementById('success-container');
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+
+        let yesScale = 1;
+
+        startBtn.addEventListener('click', () => {
+            // Small confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff4d6d', '#ff8fa3', '#ffffff']
+            });
+
+            startContainer.style.display = 'none';
+            messageContainer.style.display = 'flex';
+
+            // Show messages sequentially
+            let delay = 0;
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    // Hide previous
+                    if (index > 0) {
+                        messages[index - 1].classList.remove('show');
+                        messages[index - 1].style.transform = 'translateY(-30px) scale(1.1)';
+                        messages[index - 1].style.opacity = '0';
+                        messages[index - 1].style.filter = 'blur(5px)';
+                    }
+                    // Show current
+                    msg.classList.add('show');
+                }, delay);
+                delay += 3500; // 3.5s per message
+            });
+
+            // Show question after all messages
+            setTimeout(() => {
+                messageContainer.style.display = 'none';
+                questionContainer.style.display = 'block';
+                setTimeout(() => questionContainer.classList.add('active'), 50);
+            }, delay);
+        });
+
+        // Runaway No Button
+        const moveNoButton = () => {
+            const btnRect = noBtn.getBoundingClientRect();
+
+            // Calculate safe boundaries within the window
+            const maxX = window.innerWidth - btnRect.width - 20;
+            const maxY = window.innerHeight - btnRect.height - 20;
+
+            // Generate random position
+            const randomX = Math.max(20, Math.random() * maxX);
+            const randomY = Math.max(20, Math.random() * maxY);
+
+            // Apply fixed positioning to break out of flexbox
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.transform = 'none'; // Remove any hover transforms
+
+            // Increase Yes button size
+            yesScale += 0.2;
+            yesBtn.style.transform = `scale(${yesScale})`;
+            yesBtn.style.boxShadow = `0 ${5 * yesScale}px ${20 * yesScale}px rgba(255, 77, 109, 0.4)`;
+        };
+
+        // Trigger on both hover and touch for mobile support
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent click from registering
+            moveNoButton();
+        });
+        noBtn.addEventListener('click', moveNoButton);
+
+        // Yes Button Click
+        yesBtn.addEventListener('click', () => {
+            questionContainer.classList.remove('active');
+            setTimeout(() => {
+                questionContainer.style.display = 'none';
+                successContainer.style.display = 'block';
+                setTimeout(() => successContainer.classList.add('active'), 50);
+                
+                // Massive Confetti
+                const duration = 15 * 1000;
+                const animationEnd = Date.now() + duration;
+                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+                function randomInRange(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
+
+                const interval = setInterval(function() {
+                    const timeLeft = animationEnd - Date.now();
+
+                    if (timeLeft <= 0) {
+                        return clearInterval(interval);
+                    }
+
+                    const particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount,
+                        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                        colors: ['#ff4d6d', '#ff8fa3', '#ffffff', '#ffb3c1']
+                    }));
+                    confetti(Object.assign({}, defaults, { particleCount,
+                        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                        colors: ['#ff4d6d', '#ff8fa3', '#ffffff', '#ffb3c1']
+                    }));
+                }, 250);
+
+            }, 500);
+        });
+    </script>
+</body>
+</html>
